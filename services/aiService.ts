@@ -1,4 +1,3 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { AppSettings } from '../types';
 
@@ -20,7 +19,8 @@ const fetchOpenAICompatible = async (
     settings: AppSettings,
     systemPrompt?: string
 ) => {
-    const apiKey = settings.apiKey || process.env.API_KEY;
+    // @ts-ignore - process might be missing in some envs without polyfills, handled by try/catch or build config
+    const apiKey = settings.apiKey || (typeof process !== 'undefined' ? process.env.API_KEY : '');
     if (!apiKey) throw new Error("API Key missing");
 
     let endpoint = settings.apiUrl || "https://api.openai.com/v1/chat/completions";
@@ -94,7 +94,8 @@ export const generateChatCompletion = async (
 
     // 1. Try Google GenAI SDK First
     try {
-        const apiKey = settings.apiKey || process.env.API_KEY;
+        // @ts-ignore
+        const apiKey = settings.apiKey || (typeof process !== 'undefined' ? process.env.API_KEY : '');
         if (!apiKey) throw new Error("API Key not found.");
 
         const baseUrl = settings.apiUrl || undefined;
@@ -139,7 +140,8 @@ export const generateChatCompletion = async (
 };
 
 export const fetchModels = async (settings: AppSettings): Promise<string[]> => {
-  const apiKey = settings.apiKey || process.env.API_KEY;
+  // @ts-ignore
+  const apiKey = settings.apiKey || (typeof process !== 'undefined' ? process.env.API_KEY : '');
   if (!apiKey) throw new Error("请先填写 API Key");
 
   // Strategy 1: Google SDK / Official Endpoint
